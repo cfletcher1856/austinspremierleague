@@ -1,0 +1,6 @@
+protected/config/*
+sftp-config.json
+logs/*
+assets/*
+error_log
+profiles/*
