@@ -6,12 +6,29 @@ class Standings{
     {
         $_today = new DateTime();
         $today = $_today->format('Y-m-d');
+        $seasons = Season::model()->findAll(array('order' => 'end_date'));
+        //If there is only one season return that one
+        if(count($seasons) == 1)
+        {
+            return $seasons[0];
+        }
+
+        //If we are in the middle of a season return that season
         $season = Season::model()->findAll(array(
             'condition' => ":today BETWEEN start_date AND end_date",
             'params' => array(':today'=>$today),
         ));
 
-        return $season[0];
+        if($season)
+        {
+            return $season[0];
+        }
+
+        //If you are between seasons return the next season
+        if($seasons[count($seasons) - 2]->end_date <= $today)
+        {
+            return $seasons[count($seasons) - 1];
+        }
     }
 
     static function getStandings()
