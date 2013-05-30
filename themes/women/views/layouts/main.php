@@ -18,19 +18,19 @@
     ?>
 </head>
 <body>
-    <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.navbar'); ?>
+    <?php $this->renderPartial('webroot.themes.women.views.partials.navbar'); ?>
 
     <div class="container" id="page">
         <div class="content">
-            <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.page_header'); ?>
+            <?php $this->renderPartial('webroot.themes.women.views.partials.page_header'); ?>
 
-        	<?php $this->renderPartial('webroot.themes.bootstrap.views.partials.breadcrumbs'); ?>
+        	<?php $this->renderPartial('webroot.themes.women.views.partials.breadcrumbs'); ?>
 
         	<?php echo $content; ?>
 
         	<div class="clear"></div>
         </div>
-        <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.footer'); ?>
+        <?php $this->renderPartial('webroot.themes.women.views.partials.footer'); ?>
     </div>
 
     <script type="text/javascript">

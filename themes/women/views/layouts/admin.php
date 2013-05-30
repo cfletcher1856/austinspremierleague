@@ -21,13 +21,13 @@
 </head>
 <body>
 
-    <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.navbar'); ?>
+    <?php $this->renderPartial('webroot.themes.women.views.partials.navbar'); ?>
 
     <div class="container">
         <div class="content">
-            <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.page_header'); ?>
+            <?php $this->renderPartial('webroot.themes.women.views.partials.page_header'); ?>
 
-            <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.breadcrumbs'); ?>
+            <?php $this->renderPartial('webroot.themes.women.views.partials.breadcrumbs'); ?>
 
             <?php $this->widget('bootstrap.widgets.TbAlert', array(
                 'block'=>false, // display a larger alert block?
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </div>
-        <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.footer'); ?>
+        <?php $this->renderPartial('webroot.themes.women.views.partials.footer'); ?>
     </div>
     <script type="text/javascript">
         $(function(){
