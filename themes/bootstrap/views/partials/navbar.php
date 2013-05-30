@@ -11,7 +11,8 @@
                 )),
                 array('label'=>'Players', 'url'=>array('/site/players')),
                 array('label'=>'Rules', 'url'=>array('/site/rules')),
-                array('label'=>'Doubles', 'url'=> array('/site/doubles')),
+                array('label'=>'Doubles', 'url'=> array('/site/doubles'), 'visible'=>!Yii::app()->user->isGuest),
+                array('label'=>'Upcoming Season', 'url'=>array('/site/upcomingseason'), 'visible'=>Yii::app()->user->isGuest),
                 array('label'=>'Contact', 'url'=>array('/site/contact')),
                 array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
                 array('label'=>'Hello ('.Yii::app()->user->name.')', 'url'=> '#', 'visible'=>!Yii::app()->user->isGuest, 'items' => array(
