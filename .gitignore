@@ -4,3 +4,4 @@ logs/*
 assets/*
 error_log
 profiles/*
+index.php
