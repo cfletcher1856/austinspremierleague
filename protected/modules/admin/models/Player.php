@@ -123,6 +123,11 @@ class Player extends CActiveRecord
 
 	public function getChalkerDropDown($match_num, $season_id, $week)
 	{
+		if(!$match_num && !$season_id && !$week)
+		{
+			return array();
+		}
+
 		$sql = "
 			SELECT
 				home_player,
