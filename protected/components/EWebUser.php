@@ -20,4 +20,10 @@ class EWebUser extends CWebUser{
         }
         return $this->_model;
     }
+
+    function getName()
+    {
+        $user = $this->loadUser();
+        return $user->f_name . " " . $user->l_name;
+    }
 }
