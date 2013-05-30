@@ -17,6 +17,8 @@
 
 	<?php echo $form->textFieldRow($model,'dues',array('class'=>'span5','maxlength'=>10)); ?>
 
+	<?php echo $form->textFieldRow($model,'bar_donation',array('class'=>'span5','maxlength'=>10)); ?>
+
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'buttonType'=>'submit',
