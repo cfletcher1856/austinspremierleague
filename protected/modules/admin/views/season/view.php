@@ -34,5 +34,10 @@
 			'name' => 'dues',
 			'value' => Payment::displayMoney($model->dues),
 		),
+		array(
+			'type' => 'raw',
+			'name' => 'bar_donation',
+			'value' => Payment::displayMoney($model->bar_donation),
+		),
 	),
 )); ?>
