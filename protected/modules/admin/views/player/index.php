@@ -21,6 +21,11 @@
         array('name'=>'email', 'header'=>'Email'),
         array('name'=>'phone', 'header'=>'Phone'),
         array(
+                    'name'=>'active',
+                    'header'=>'Active',
+                    'value' => '$data->activeChar()'
+                ),
+        array(
             'class'=>'bootstrap.widgets.TbButtonColumn',
             'htmlOptions'=>array('style'=>'width: 50px; text-align: center;'),
             'template' => '{view} {update} {profile}',

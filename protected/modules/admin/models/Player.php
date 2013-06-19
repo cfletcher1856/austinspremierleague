@@ -302,4 +302,8 @@ class Player extends CActiveRecord
 
 		return number_format($total_fees - $breakdown['payments'], 2);
 	}
+
+	public function activeChar(){
+        return ($this->active) ? 'Y' : 'N';
+    }
 }
