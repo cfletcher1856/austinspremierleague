@@ -7,6 +7,7 @@
     $this->menu=array(
         array('label' => 'Actions'),
     	array('label'=>'Create Schedule','icon' => 'plus','url'=>array('create')),
+        array('label'=>'Generate Schedule','icon' => 'plus','url'=>array('generate')),
     );
     $this->page_header = 'Schedules';
 ?>

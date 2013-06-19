@@ -42,7 +42,7 @@ class Schedule extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('season_id, week, date, home_player, away_player, chalker, board, match', 'required'),
+			array('season_id, week, date, home_player, away_player, board, match', 'required'),
 			array('season_id, week, home_player, away_player, chalker, board, match', 'numerical', 'integerOnly'=>true),
 			array('home_player', 'compare', 'operator' => '!=', 'compareAttribute' => 'away_player', 'message' => 'Home Player must not be the same as the Away Player'),
 			array('chalker', 'compare', 'operator' => '!=', 'compareAttribute' => 'away_player', 'message' => 'Chalker must not be the same as the Away Player'),
