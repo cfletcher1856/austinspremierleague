@@ -134,7 +134,7 @@ class ScheduleController extends AdminController
 			$$provider = new CActiveDataProvider('Schedule', array(
 				'criteria' => array(
 					'condition' => "week = $week",
-					'order' => "'match', 'board'"
+					'order' => "`match`, `board`"
 				),
 				'pagination'=>array(
 			        'pageSize'=>20,
