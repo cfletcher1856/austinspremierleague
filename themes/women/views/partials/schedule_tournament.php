@@ -2,7 +2,7 @@
     <td colspan="6" class="center">Top 8 Players Qualify for the Seeded Tournament</td>
 </tr>
 <tr>
-    <td rowspan="4">12 - 6/3/2013</td>
+    <td rowspan="4">12 - 9/4/2013</td>
     <td>Quarters</td>
     <td class="center">#1 Seed vs #8 Seed</td>
     <td class="center">#4 Seed vs #5 Seed</td>
