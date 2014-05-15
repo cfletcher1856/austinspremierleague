@@ -7,11 +7,10 @@ Yii::import('application.modules.admin.models.PlayerSeason');
 Yii::import('application.modules.admin.models.BlindDraw');
 Yii::import('application.models.Standings');
 Yii::import('application.models.Statistics');
+Yii::import('ext.phpmailer.JPhpMailer');
 
 class SiteController extends Controller
 {
-	public $page_header;
-
 	/**
 	 * Declares class-based actions.
 	 */
@@ -360,9 +359,12 @@ class SiteController extends Controller
 			$model->attributes=$_POST['LoginForm'];
 			// validate user input and redirect to the previous page if valid
 			if($model->validate() && $model->login())
-				$this->redirect(array('//admin'));
+			{
+				$this->redirect(array($model->get_redirect()));
+			}
 		}
 		// display the login form
+		$model->password = '';
 		$this->render('login',array('model'=>$model));
 	}
 
@@ -425,6 +427,63 @@ class SiteController extends Controller
 
 		$this->render('blind_draw', array(
 			'blind_draws' => $blind_draws
+		));
+	}
+
+	public function actionBlah()
+	{
+		//echo phpinfo();
+		echo uniqid();
+	}
+
+	public function actionForgotPassword()
+	{
+		$model = new ForgotPasswordForm;
+
+		if(isset($_POST['ForgotPasswordForm']))
+		{
+			$model->attributes=$_POST['ForgotPasswordForm'];
+
+			// validate user input and redirect to the previous page if valid
+			if($model->set_reset_token($this))
+			{
+				$this->redirect(array('//login'));
+			}
+		}
+
+		$this->render('forgot_password', array(
+			'model' => $model
+		));
+	}
+
+	public function actionResetPassword($uuid)
+	{
+		$model = new ResetPasswordForm;
+
+		$user = User::model()->findByAttributes(array(
+			'reset_token' => $uuid
+		));
+
+		if(isset($_POST['ResetPasswordForm']) && !is_null($user))
+		{
+			$user->password = md5($_POST['ResetPasswordForm']['password']);
+			$user->reset_token = null;
+			$user->reset_time = null;
+			if($user->save()){
+				Yii::app()->user->setFlash('success', 'Your password has been updated.  Please login now.');
+				$this->redirect(array('//login'));
+			}
+
+			Yii::app()->user->setFlash('error', 'There was a problem resetting your password.  Please try again.');
+		}
+
+		if(is_null($user)){
+			Yii::app()->user->setFlash('error', 'We could not find a record of you wanting to change your password.  Please fill out the forgot password form again.');
+			$this->redirect(array('//forgotpassword'));
+		}
+
+		$this->render('reset_password', array(
+			'model' => $model
 		));
 	}
 }

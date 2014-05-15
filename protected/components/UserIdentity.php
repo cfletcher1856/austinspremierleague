@@ -8,6 +8,7 @@
 class UserIdentity extends CUserIdentity
 {
 	private $_id;
+	private $_user;
 
 	/**
 	 * Authenticates a user.
@@ -20,7 +21,7 @@ class UserIdentity extends CUserIdentity
 	public function authenticate()
 	{
 		$username = strtolower($this->username);
-		$user = User::model()->find('LOWER(email)=? and password=?', array($username, md5($this->password)));
+		$this->_user = $user = User::model()->find('LOWER(email)=? and password=?', array($username, md5($this->password)));
 
 		if($user === null){
 			$this->errorCode = self::ERROR_USERNAME_INVALID;
@@ -28,7 +29,6 @@ class UserIdentity extends CUserIdentity
 			$this->errorCode = self::ERROR_PASSWORD_INVALID;
 		} else {
 			$this->_id = $user->id;
-			$this->username = $user->username;
 			$this->errorCode = self::ERROR_NONE;
 		}
 		return $this->errorCode == self::ERROR_NONE;
@@ -37,5 +37,10 @@ class UserIdentity extends CUserIdentity
 	public function getId()
 	{
 		return $this->_id;
+	}
+
+	public function get_redirect()
+	{
+		return $this->_user->redirect;
 	}
 }

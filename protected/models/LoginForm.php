@@ -37,6 +37,7 @@ class LoginForm extends CFormModel
 	{
 		return array(
 			'rememberMe'=>'Remember me next time',
+			'username' => 'Email Address'
 		);
 	}
 
@@ -73,5 +74,10 @@ class LoginForm extends CFormModel
 		}
 		else
 			return false;
+	}
+
+	public function get_redirect()
+	{
+		return $this->_identity->get_redirect();
 	}
 }

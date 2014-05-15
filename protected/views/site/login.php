@@ -4,9 +4,6 @@
 	/* @var $form CActiveForm  */
 
 	$this->pageTitle=Yii::app()->name . ' - Login';
-	$this->breadcrumbs=array(
-		'Login',
-	);
 	$this->page_header = "Login";
 ?>
 
@@ -30,6 +27,13 @@
 	<?php echo $form->textFieldRow($model,'username'); ?>
 
 	<?php echo $form->passwordFieldRow($model,'password'); ?>
+
+	<div class="control-group error">
+		<label class="control-label">&nbsp;</label>
+		<div class="controls">
+			<?php echo CHtml::link('Forgot Password', array("//forgotpassword")); ?>
+		</div>
+	</div>
 
 	<?php //echo $form->checkBoxRow($model,'rememberMe'); ?>
 
