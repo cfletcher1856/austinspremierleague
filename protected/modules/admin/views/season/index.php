@@ -24,7 +24,14 @@
         array(
             'class'=>'bootstrap.widgets.TbButtonColumn',
             'htmlOptions'=>array('style'=>'width: 50px; text-align: center;'),
-            'template' => '{view} {update}',
+            'buttons' => array(
+                'players' => array(
+                    'label' => 'Players',
+                    'icon' => 'user',
+                    'url' => 'Yii::app()->createUrl("//admin/playerSeason/update", array("id" => $data->id))',
+                ),
+            ),
+            'template' => '{view} {update} {players}',
         ),
     ),
 )); ?>

@@ -35,7 +35,11 @@ class ReportsController extends AdminController
      */
     public function actionIndex()
     {
-        $players = Player::model()->findAllByAttributes(array('active' => 1));
+        $players = Player::model()->findAll(array(
+            'order' => 'l_name, f_name',
+            'condition' => 'active = :active AND f_name <> :fname AND f_name <> :fname2',
+            'params' => array(':active' => 1, ':fname' => 'Raggedy', ':fname2' => 'Texas')
+        ));
         //$dataProvider=new CActiveDataProvider('Reports');
         $this->render('index',array(
             'dataProvider'=>$dataProvider,

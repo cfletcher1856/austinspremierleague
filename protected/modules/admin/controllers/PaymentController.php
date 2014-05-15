@@ -130,6 +130,9 @@ class PaymentController extends AdminController
 	public function actionIndex()
 	{
 		$dataProvider=new CActiveDataProvider('Payment', array(
+			'criteria'=>array(
+		        'order' => 'date DESC',
+		    ),
 			'pagination'=>array(
 				'pageSize'=>20,
 			),

@@ -1,5 +1,5 @@
 <?php
-
+Yii::import('application.models.Standings');
 /**
  * This is the model class for table "season".
  *
@@ -100,48 +100,51 @@ class Season extends CActiveRecord
 
 	public function getSeasonsDropDown()
 	{
-		$seasons = Season::model()->findAll();
+		$seasons = Standings::getCurrentSeason();
 
-		$_seasons = array();
-		foreach($seasons as $season){
-			$_seasons[$season->id] = $season->name;
-		}
-
-		return $_seasons;
+		return array($seasons->id => $seasons->name);
 	}
 
 	public function getSeasonWeeks()
 	{
-		$start_date = strtotime($this->start_date);
-	    $end_date = strtotime($this->end_date);
-	    $diff = $end_date - $start_date;
+		$start = new DateTime($this->start_date);
+		$end = new DateTime($this->end_date);
 
-	    $one_week_in_seconds = 60 * 60 * 24 * 7;
+		$days = round(($end->format('U') - $start->format('U')) / (60*60*24));
 
-	    return $diff / $one_week_in_seconds;
+		return $days / 7;
 	}
 
 	public function getSeasonDatesAsArray($add_quotes=False)
 	{
+		$current_season = Standings::getCurrentSeason();
+
+		$sql = "
+			SELECT
+				DISTINCT date
+			FROM `schedule`
+			WHERE season_id = $current_season->id
+			ORDER BY date
+		";
+
+		$dates = Yii::app()->db->createCommand($sql)->queryAll();
+
 		$start_date = new DateTime($this->start_date);
 	    $weeks = $this->getSeasonWeeks();
-	    $dates = array();
-	    foreach(range(1, $weeks) as $week)
+	    $_dates = array();
+	    foreach($dates as $blah => $date)
 	    {
-	        if($week != 1){
-	        	$start_date->modify('+7 days');
-	        }
-
-	        $date = $start_date->format('m/d/Y');
+	        $_date = new DateTime($date['date']);
+	        $_date = $_date->format('m/d/Y');
 
 	        if($add_quotes)
 	    	{
-	        	$date = "'" . $date . "'";
+	        	$_date = "'" . $_date . "'";
 	        }
 
-	        $dates[] = $date;
+	        $_dates[] = $_date;
 	    }
 
-	    return $dates;
+	    return $_dates;
 	}
 }

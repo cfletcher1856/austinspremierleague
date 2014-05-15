@@ -11,8 +11,10 @@
         array('label'=>'Matches', 'icon' => 'bar-chart','url'=>array('//admin/match/index')),
         array('label'=>'Schedule', 'icon' => 'calendar','url'=>array('//admin/schedule/index')),
         array('label'=>'Seasons', 'icon' => 'star','url'=>array('//admin/season/index')),
+        array('label'=>'Division', 'icon' => 'star','url'=>array('//admin/division/index')),
         array('label'=>'Bars', 'icon' => 'beer','url'=>array('//admin/bar/index')),
         array('label'=>'Reports', 'icon' => 'file-alt','url'=>array('//admin/reports/index')),
+        array('label'=>'Blind Draw', 'icon' => 'file-alt','url'=>array('//admin/blindDraw/index')),
     );
     $this->page_header = 'Admin';
 ?>

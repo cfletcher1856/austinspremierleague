@@ -159,6 +159,7 @@ class Player extends CActiveRecord
 			WHERE `id` NOT IN ($_ids)
 			AND `active` = 1
 			AND `f_name` <> 'Raggedy'
+			AND `f_name` <> 'Texas'
 		";
 
 		$chalkers = Yii::app()->db->createCommand($sql)->queryAll();
@@ -189,7 +190,8 @@ class Player extends CActiveRecord
 			'params' => array(
 				':season_id' => $season_id,
 				':player_id' => $this->id
-			)
+			),
+			'order' => 'date'
 		));
 
 		$stats = array();
@@ -259,17 +261,22 @@ class Player extends CActiveRecord
 
 	private function paymentBreakDown()
 	{
+		$season = Standings::getCurrentSeason();
+		$start_date = new DateTime($season->start_date);
 		$fees = 0.00;
 		$payments = 0.00;
 		foreach($this->payments as $payment)
 		{
-			if($payment->txn_type == 'fee')
-			{
-				$fees += $payment->amount;
-			}
-			elseif($payment->txn_type == 'payment')
-			{
-				$payments += $payment->amount;
+			$payment_date = new DateTime($payment->date);
+			if($payment_date->format('U') >= $start_date->format('U')){
+				if($payment->txn_type == 'fee')
+				{
+					$fees += $payment->amount;
+				}
+				elseif($payment->txn_type == 'payment')
+				{
+					$payments += $payment->amount;
+				}
 			}
 		}
 
@@ -305,5 +312,55 @@ class Player extends CActiveRecord
 
 	public function activeChar(){
         return ($this->active) ? 'Y' : 'N';
+    }
+
+    public function getLifetimeStats(){
+    	$games = Schedule::model()->findAll(array(
+    		'condition' => 'home_player = :player_id OR away_player = :player_id',
+    		'params' => array(
+    			':player_id' => $this->id
+    		),
+    		'order' => 'date'
+    	));
+
+    	$stats = array();
+    	foreach($games as $game)
+    	{
+    		$match = Match::model()->findByAttributes(array(
+    			'player_id' => $this->id,
+    			'schedule_id' => $game->id
+    		));
+
+    		$match_details = MatchDetails::model()->findAllByAttributes(array(
+    			'player_id' => $this->id,
+    			'match_id' => $match->id
+    		));
+
+    		$stats[$game->date]['quality_points'] += $match->quality_points;
+    		$stats[$game->date]['ton_eighties'] += $match->ton_eighties;
+    		foreach($match_details as $detail)
+    		{
+    			$stats[$game->date]['darts_thrown'] += $detail->darts_thrown;
+    			$stats[$game->date]['points_left'] += $detail->points_left;
+    		}
+    		$stats[$game->date]['legs'] += count($match_details);
+    	}
+
+    	foreach($stats as $date => $stat)
+    	{
+    		$stats[$date]['three_dart_avg'] = self::calculateThreeDartAverage($stat['legs'], $stat['points_left'], $stat['darts_thrown']);
+    	}
+
+    	$_stats = array();
+    	$legs = 0;
+    	$match_points = 0;
+    	$points_left = 0;
+    	foreach($stats as $stat)
+    	{
+    		$_stats['quality_points'] += $stat['quality_points'];
+    		$_stats['ton_eighties'] += $stat['ton_eighties'];
+    	}
+
+    	return $_stats;
     }
 }

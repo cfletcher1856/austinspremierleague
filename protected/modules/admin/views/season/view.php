@@ -41,3 +41,15 @@
 		),
 	),
 )); ?>
+
+<h3>Players</h3>
+<?php
+	$division_label = "xxxx";
+	foreach($current_players as $player){
+		if($division_label != $player->division->division){
+			echo "<br /><p><strong>{$player->division->division}</strong></p>";
+			$division_label = $player->division->division;
+		}
+		echo $player->player->getFullName()."<br />";
+	}
+?>

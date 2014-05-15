@@ -6,6 +6,11 @@
 <body>
     <a href="http://austinspremierleague.com/standings">http://austinspremierleague.com/standings</a>
     <br /><br />
+
+    <?php
+        foreach($_standings as $division => $standings):
+    ?>
+    <h3>Division <?php echo $division; ?></h3>
     <table style="width:100%">
     <tbody>
         <tr>
@@ -59,8 +64,8 @@
         <tr>
             <td>
                 <?php
-                    foreach($stats['high_out'] as $num => $stat){
-                        if($stats['high_out'][0]['high_out'] == $stat['high_out']){
+                    foreach($stats[$division]['high_out'] as $num => $stat){
+                        if($stats[$division]['high_out'][0]['high_out'] == $stat['high_out']){
                             echo $stat['player'] . " (" . $stat['high_out'] . ")<br />";
                         }
                     }
@@ -68,8 +73,8 @@
             </td>
             <td>
                 <?php
-                    foreach($stats['quality_points'] as $num => $stat){
-                        if($stats['quality_points'][0]['quality_points'] == $stat['quality_points']){
+                    foreach($stats[$division]['quality_points'] as $num => $stat){
+                        if($stats[$division]['quality_points'][0]['quality_points'] == $stat['quality_points']){
                             echo $stat['player'] . " (" . $stat['quality_points'] . ")<br />";
                         }
                     }
@@ -77,8 +82,8 @@
             </td>
             <td>
                 <?php
-                    foreach($stats['ton_eighties'] as $num => $stat){
-                        if($stats['ton_eighties'][0]['ton_eighties'] == $stat['ton_eighties']){
+                    foreach($stats[$division]['ton_eighties'] as $num => $stat){
+                        if($stats[$division]['ton_eighties'][0]['ton_eighties'] == $stat['ton_eighties'] && $stat['ton_eighties'] > 0){
                             echo $stat['player'] . " (" . $stat['ton_eighties'] . ")<br />";
                         }
                     }
@@ -87,5 +92,6 @@
         </tr>
     </tbody>
     </table>
+    <?php endforeach; ?>
 </body>
 </html>

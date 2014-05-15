@@ -4,17 +4,20 @@
   $player_stats = $player->getStatsByMatch();
   $qps = array();
   $ton_eighties = array();
+  $three_dart_avg = array();
   $today = new DateTime();
 
   foreach($player_stats as $date => $stats)
   {
-    if($date < $today->format('Y-m-d')){
+    if($date <= $today->format('Y-m-d')){
       $qps[] = $stats['quality_points'];
       $ton_eighties[] = $stats['ton_eighties'];
       $three_dart_avg[] = $stats['three_dart_avg'];
     }
   }
 ?>
+
+
 
 <div id="<?php echo $player_name; ?>"></div>
 

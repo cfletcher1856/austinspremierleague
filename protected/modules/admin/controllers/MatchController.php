@@ -250,12 +250,18 @@ class MatchController extends AdminController
 	 */
 	public function actionIndex()
 	{
+		$current_season = Standings::getCurrentSeason();
 		$render_options = array();
-		foreach(range(1, 11) as $week){
+		foreach(range(1, $current_season->getSeasonWeeks()) as $week){
 			$week_schedule = 'week'.$week.'Schedule';
-			$$week_schedule = Schedule::model()->findAllByAttributes(array("week" => $week));
+
+			$$week_schedule = Schedule::model()->findAllByAttributes(array(
+				"week" => $week,
+				'season_id' => $current_season->id
+			));
 			$render_options[$week_schedule] = $$week_schedule;
 		}
+
 		$this->render('index', $render_options);
 	}
 
@@ -275,10 +281,16 @@ class MatchController extends AdminController
 	}
 
 	public function actionEmail(){
-		$standings = Standings::getStandings();
-		$stats['ton_eighties'] = Standings::getMostTonEighties();
-		$stats['quality_points'] = Standings::getMostQualityPoints();
-		$stats['high_out'] = Standings::getHighOut();
+		$divisions = Division::model()->findAll();
+		$_standings = array();
+		foreach($divisions as $division){
+			$standings = Standings::getStandings($division->id);
+			$stats[$division->id]['ton_eighties'] = Standings::getMostTonEighties($division->id);
+			$stats[$division->id]['quality_points'] = Standings::getMostQualityPoints($division->id);
+			$stats[$division->id]['high_out'] = Standings::getHighOut($division->id);
+
+			$_standings[$division->id] = $standings;
+		}
 
 		$mailer = new JPhpMailer(true);
 		$mailer->SingleTo = true;
@@ -288,10 +300,10 @@ class MatchController extends AdminController
 			$mailer->Subject = "Austin's Premier League Stangings";
 			$mailer->SetFrom('standings@austinspremierleague.com');
 			$mailer->AddReplyTo('standings@austinspremierleague.com');
-			$mailer->MsgHTML($this->renderPartial('standings_email', array('standings' => $standings, 'stats' => $stats), true));
+			$mailer->MsgHTML($this->renderPartial('standings_email', array('_standings' => $_standings, 'stats' => $stats), true));
 			foreach($players as $player){
 				//if($player->f_name == 'Colin' /*|| $player->f_name == 'Ryan'*/){
-				$mailer->AddAddress($player->email, $player->f_name . ' ' . $player->l_name);
+					$mailer->AddAddress($player->email, $player->f_name . ' ' . $player->l_name);
 				//}
 			}
 			$mailer->send();

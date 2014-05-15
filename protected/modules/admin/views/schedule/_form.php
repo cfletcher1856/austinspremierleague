@@ -26,7 +26,9 @@
 
 	<?php echo $form->dropDownListRow($model,'chalker',Player::model()->getChalkerDropDown($model->match, $model->season_id, $model->week),array('class'=>'span5')); ?>
 
-	<?php echo $form->dropDownListRow($model,'board', array("2" => "Board 2", "3" => 'Board 3', "4" => 'Board 4', '5' => 'Board 5'), array('class'=>'span5')); ?>
+	<?php echo $form->dropDownListRow($model,'board', array("1" => "Board 1", "2" => "Board 2", "3" => 'Board 3', "4" => 'Board 4', '5' => 'Board 5', '6' => 'Board 6'), array('class'=>'span5')); ?>
+
+	<?php echo $form->dropDownListRow($model,'bar_id', $model->getBars(), array('class'=>'span5')); ?>
 
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(

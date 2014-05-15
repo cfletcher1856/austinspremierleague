@@ -16,6 +16,7 @@
         Yii::app()->bootstrap->register();
         Yii::app()->less->register();
     ?>
+    <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/main.css" />
 </head>
 <body>
     <?php $this->renderPartial('webroot.themes.bootstrap.views.partials.navbar'); ?>

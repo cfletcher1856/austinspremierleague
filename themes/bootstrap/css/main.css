@@ -1,0 +1,16 @@
+.doubles_pot{
+    color: green;
+    text-align: center;
+}
+
+.doubles_pot h4{
+    margin-top: 0;
+}
+
+.pot_amount{
+    font-size: 25px;
+}
+
+.doubles_pot_breakdown{
+    text-align: center;
+}

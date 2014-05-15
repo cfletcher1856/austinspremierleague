@@ -13,6 +13,7 @@
  * @property integer $chalker
  * @property integer $board
  * @property integer $match
+ * @property integer $bar_id
  */
 class Schedule extends CActiveRecord
 {
@@ -42,14 +43,14 @@ class Schedule extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('season_id, week, date, home_player, away_player, board, match', 'required'),
-			array('season_id, week, home_player, away_player, chalker, board, match', 'numerical', 'integerOnly'=>true),
+			array('season_id, week, date, home_player, away_player, board, match, bar_id', 'required'),
+			array('season_id, week, home_player, away_player, chalker, board, match, bar_id', 'numerical', 'integerOnly'=>true),
 			array('home_player', 'compare', 'operator' => '!=', 'compareAttribute' => 'away_player', 'message' => 'Home Player must not be the same as the Away Player'),
 			array('chalker', 'compare', 'operator' => '!=', 'compareAttribute' => 'away_player', 'message' => 'Chalker must not be the same as the Away Player'),
 			array('chalker', 'compare', 'operator' => '!=', 'compareAttribute' => 'home_player', 'message' => 'Chalker must not be the same as the Home Player'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, season_id, week, date, home_player, away_player, chalker, board, match', 'safe', 'on'=>'search'),
+			array('id, season_id, week, date, home_player, away_player, chalker, board, match, bar_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -66,6 +67,7 @@ class Schedule extends CActiveRecord
 			'season' => array(self::BELONGS_TO, 'Season', 'season_id'),
 			'matches' => array(self::HAS_MANY, 'Match', 'schedule_id'),
 			'the_chalker' => array(self::BELONGS_TO, 'Player', 'chalker'),
+			'bar' => array(self::BELONGS_TO, 'Bar', 'bar_id'),
 		);
 	}
 
@@ -84,6 +86,7 @@ class Schedule extends CActiveRecord
 			'chalker' => 'Chalker',
 			'board' => 'Board',
 			'match' => 'Match',
+			'bar_id' => 'Bar',
 		);
 	}
 
@@ -107,6 +110,7 @@ class Schedule extends CActiveRecord
 		$criteria->compare('chalker',$this->chalker);
 		$criteria->compare('board',$this->board);
 		$criteria->compare('match',$this->match);
+		$criteria->compare('bar_id',$this->bar_id);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -141,5 +145,23 @@ class Schedule extends CActiveRecord
 		}
 
 		return "No Chalker Assigned";
+	}
+
+	public function getBars()
+	{
+		$bars = Bar::model()->findAllByAttributes(array(
+			'active' => 1
+		));
+		$_bars = array();
+		foreach($bars as $bar){
+			$_bars[$bar->id] = $bar->name;
+		}
+
+		return $_bars;
+	}
+
+	public function getBar()
+	{
+		return $this->bar->name;
 	}
 }

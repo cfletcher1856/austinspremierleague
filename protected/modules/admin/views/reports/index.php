@@ -26,11 +26,12 @@
         <?php
             foreach($players as $player)
             {
-                if($player->getLeagueBalance() > 0)
+                $balance = $player->getLeagueBalance();
+                if($balance > 0)
                 {
                     echo $player->getFullName();
                     echo " - ";
-                    echo Payment::displayMoney($player->getLeagueBalance());
+                    echo Payment::displayMoney($balance);
                     echo "<br />";
                 }
             }

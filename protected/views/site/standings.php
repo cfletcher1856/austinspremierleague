@@ -2,14 +2,19 @@
     /* @var $this SiteController */
     Yii::import('application.models.Standings');
     $this->pageTitle='APL - Standings';
-    $this->page_header = 'Standings';
+    $this->page_header = 'Standings <a href="/statistics/" class="btn btn-info pull-right"><i class="icon-tasks"></i>  Seasons Statistics</a> <a style="margin-right: 10px" href="/division-statistics/" class="btn btn-info pull-right"><i class="icon-tasks"></i>  Division Statistics</a>';
 ?>
 
 
+<?php
+    foreach($_standings as $division => $standings):
+?>
+<h3>Division <?php echo $division; ?></h3>
 <table class="table table-condensed">
 <thead>
     <tr>
         <th>#</th>
+        <th>&nbsp;</th>
         <th>Player</th>
         <th>Matches Played</th>
         <th>Won</th>
@@ -27,8 +32,30 @@
         foreach($standings as $standing):
     ?>
     <tr>
-        <td><?php echo $ctr++; ?></td>
-        <td><?php echo $standing['player']; ?></td>
+        <td><?php echo $ctr; ?></td>
+        <td>
+            <?php
+                if($blah[$division][$standing['player']] > $ctr)
+                {
+                    echo "<span style=\"color: #38B44A;\">";
+                    echo "<i class=\"icon icon-caret-up\"></i>&nbsp;";
+                    echo "<small>" . abs($blah[$division][$standing['player']] - $ctr) . "</small>";
+                    echo "</span>";
+                } elseif($blah[$division][$standing['player']] < $ctr)
+                {
+                    echo "<span style=\"color: #C4291E;\">";
+                    echo "<i class=\"icon icon-caret-down\"></i>&nbsp";
+                    echo "<small>" . abs($blah[$division][$standing['player']] - $ctr) . "</small>";
+                    echo "</span>";
+                } else
+                {
+                    echo "<i class=\"icon icon-caret-right\"></i>&nbsp";
+                }
+            ?>
+        </td>
+        <td>
+            <?php echo CHtml::link($standing['player'], array('//site/player', 'player' => $standing['player'])); ?>
+        </td>
         <td><?php echo $standing['played']; ?></td>
         <td><?php echo $standing['matches_won']; ?></td>
         <td><?php echo $standing['matches_lost']; ?></td>
@@ -42,10 +69,10 @@
         </td>
         <td><?php echo Standings::getSeasonDartAvergae($standing['player_id']); ?></td>
     </tr>
-    <?php endforeach; ?>
+    <?php $ctr++; endforeach; ?>
     <?php else: ?>
     <tr>
-        <td colspan="8">No matches have been played yet</td>
+        <td colspan="9">No matches have been played yet</td>
     </tr>
     <?php endif; ?>
 </tbody>
@@ -53,34 +80,45 @@
 
 
 <div class="row">
-    <div class="span4">
+    <div class="span3">
         <strong>Highest Out</strong><br />
         <?php
-            foreach($stats['high_out'] as $num => $stat){
-                if($stats['high_out'][0]['high_out'] == $stat['high_out']){
+            foreach($stats[$division]['high_out'] as $num => $stat){
+                if($stats[$division]['high_out'][0]['high_out'] == $stat['high_out']){
                     echo $stat['player'] . " (" . $stat['high_out'] . ")<br />";
                 }
             }
         ?>
     </div>
-    <div class="span4">
+    <div class="span3">
         <strong>Most 93+ Scores</strong><br />
         <?php
-            foreach($stats['quality_points'] as $num => $stat){
-                if($stats['quality_points'][0]['quality_points'] == $stat['quality_points']){
+            foreach($stats[$division]['quality_points'] as $num => $stat){
+                if($stats[$division]['quality_points'][0]['quality_points'] == $stat['quality_points']){
                     echo $stat['player'] . " (" . $stat['quality_points'] . ")<br />";
                 }
             }
         ?>
     </div>
-    <div class="span4">
+    <div class="span3">
+        <strong>Most 100+ Checkouts</strong><br />
+        <?php
+            foreach($stats[$division]['ton_plus_checkouts'] as $num => $stat){
+                if($stats[$division]['ton_plus_checkouts'][0]['ton_plus_checkouts'] == $stat['ton_plus_checkouts'] && $stat['ton_plus_checkouts'] > 0){
+                    echo $stat['player'] . " (" . $stat['ton_plus_checkouts'] . ")<br />";
+                }
+            }
+        ?>
+    </div>
+    <div class="span3">
         <strong>Most 180's</strong><br />
         <?php
-            foreach($stats['ton_eighties'] as $num => $stat){
-                if($stats['ton_eighties'][0]['ton_eighties'] == $stat['ton_eighties']){
+            foreach($stats[$division]['ton_eighties'] as $num => $stat){
+                if($stats[$division]['ton_eighties'][0]['ton_eighties'] == $stat['ton_eighties'] && $stat['ton_eighties'] > 0){
                     echo $stat['player'] . " (" . $stat['ton_eighties'] . ")<br />";
                 }
             }
         ?>
     </div>
 </div>
+<?php endforeach; ?>

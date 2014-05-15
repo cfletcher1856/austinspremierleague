@@ -3,8 +3,9 @@
     'dataProvider'=>$dataProvider,
     'template'=>"{items} {pager}",
     'columns'=>array(
-        array('name'=>'match', 'header'=>'Match'),
+        array('name'=>'match', 'header'=>'Bar', 'value'=>'$data->getBar()'),
         array('name'=>'board', 'header'=>'Board'),
+        array('name'=>'match', 'header'=>'Match'),
         array('name' => 'matchup', 'header' => 'Matchup', 'value' => '$data->getMatchup()'),
         array('name' => 'chalker', 'header' => 'Chalker', 'value' => '$data->getChalker()'),
         array(

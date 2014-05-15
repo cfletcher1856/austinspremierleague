@@ -1,7 +1,7 @@
 <?php
 
 class LevelLookUp{
-      const MEMBER = 0;
+      const MEMBER = 1;
       const ADMIN  = 2;
       // For CGridView, CListView Purposes
       public static function getLabel( $level ){

@@ -36,8 +36,15 @@ class SeasonController extends AdminController
 	 */
 	public function actionView($id)
 	{
+		$current_players = PlayerSeason::model()->findAll(array(
+			'order' => 'division_id',
+			'condition' => 'season_id=:x',
+			'params' => array(':x' => $id)
+		));
+
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+			'current_players' => $current_players,
 		));
 	}
 
@@ -134,7 +141,11 @@ class SeasonController extends AdminController
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Season');
+		$dataProvider=new CActiveDataProvider('Season', array(
+			'criteria'=>array(
+		        'order'=>'start_date DESC',
+		    ),
+		));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));

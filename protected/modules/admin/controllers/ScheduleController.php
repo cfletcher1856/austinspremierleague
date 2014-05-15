@@ -128,21 +128,26 @@ class ScheduleController extends AdminController
 	 */
 	public function actionIndex()
 	{
+		$current_season = Standings::getCurrentSeason();
+		$season_id = $current_season->id;
 		$render_options = array();
-		foreach(range(1, 11) as $week){
+
+		foreach(range(1, $current_season->getSeasonWeeks()) as $week){
 			$provider = 'week'.$week.'DataProvider';
 			$$provider = new CActiveDataProvider('Schedule', array(
 				'criteria' => array(
-					'condition' => "week = $week",
-					'order' => "`match`, `board`"
+					'condition' => "week = $week and season_id = $season_id",
+					'order' => "`bar_id`, `board`, `match`"
 				),
 				'pagination'=>array(
-			        'pageSize'=>20,
+			        'pageSize'=>30,
 			    ),
 			));
 			$render_options[$provider] = $$provider;
 		}
-
+		// echo "<pre>";
+		// print_r($render_options);exit;
+		// echo "</pre>";
 		$this->render('index', $render_options);
 	}
 

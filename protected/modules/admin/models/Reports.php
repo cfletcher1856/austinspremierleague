@@ -5,11 +5,13 @@ class Reports{
     static function getLeagueBalance()
     {
         $season = Standings::getCurrentSeason();
+        $start_date = new DateTime($season->start_date);
         $num_of_players = count(Player::model()->findAll(array(
-            'condition' => 'active = :active AND f_name != :fname',
+            'condition' => 'active = :active AND f_name != :fname AND f_name != :fname2',
             'params' => array(
                 ':active' => '1',
-                ':fname' => 'Raggedy'
+                ':fname' => 'Raggedy',
+                ':fname2' => 'Texas'
             )
         )));
 
@@ -21,15 +23,17 @@ class Reports{
         $fees = 0.00;
         foreach($payments as $payment)
         {
-            if($payment->txn_type == 'payment')
-            {
-                $collected += $payment->amount;
+            $payment_date = new DateTime($payment->date);
+            if($payment_date->format('U') >= $start_date->format('U')){
+                if($payment->txn_type == 'payment')
+                {
+                    $collected += $payment->amount;
+                }
+                else
+                {
+                    $fees += $payment->amount;
+                }
             }
-            else
-            {
-                $fees += $payment->amount;
-            }
-
         }
 
         $season_total = $player_dues + $season->bar_donation;
