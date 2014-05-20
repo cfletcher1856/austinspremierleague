@@ -18,6 +18,7 @@
         Yii::app()->bootstrap->register();
         Yii::app()->less->register();
     ?>
+    <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/portal.css" />
 </head>
 <body>
 
@@ -38,7 +39,6 @@
             <div class="row">
                 <div class="span3">
                     <?php
-                        $this->menu[] = array('label'=>'Player Portal', 'icon' => 'user','url'=>array('//portal'));
                         $this->widget('bootstrap.widgets.TbMenu', array(
                             'type' => 'list',
                             'htmlOptions' => array('class' => 'well'),

@@ -363,4 +363,13 @@ class Player extends CActiveRecord
 
     	return $_stats;
     }
+
+    public function validatePassword($password)
+    {
+        if(md5($password) == $this->password){
+            return true;
+        }
+
+        return false;
+    }
 }

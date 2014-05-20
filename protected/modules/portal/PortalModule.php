@@ -18,6 +18,9 @@ class PortalModule extends CWebModule
 	{
 		if(parent::beforeControllerAction($controller, $action))
 		{
+			if(Yii::app()->user->isGuest){
+				Controller::redirect(Controller::createUrl(Yii::app()->user->loginUrl[0]));
+			}
 			// this method is called before any module controller action is performed
 			// you may place customized code here
 			return true;

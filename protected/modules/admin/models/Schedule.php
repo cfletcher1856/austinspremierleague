@@ -122,6 +122,13 @@ class Schedule extends CActiveRecord
 		return $this->h_player->getFullName() . ' vs ' . $this->a_player->getFullName();
 	}
 
+	public function getMatchDate()
+	{
+		$date = new DateTime($this->date);
+
+		return $date->format('m/d/Y');
+	}
+
 	public function getHomeMatch()
 	{
 		return Match::model()->findByAttributes(array(

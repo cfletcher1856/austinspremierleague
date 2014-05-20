@@ -24,7 +24,7 @@ class ForgotPasswordForm extends CFormModel
 
    public function set_reset_token($controller)
    {
-        $user = User::model()->findByAttributes(array(
+        $user = Player::model()->findByAttributes(array(
             'email' => $this->email
         ));
 

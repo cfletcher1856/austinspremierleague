@@ -1,4 +1,5 @@
 <?php
+Yii::import('application.modules.admin.models.Player');
 
 class EWebUser extends CWebUser
 {
@@ -20,7 +21,7 @@ class EWebUser extends CWebUser
     {
         if($this->_model === null)
         {
-            $this->_model = User::model()->findByPk($this->id);
+            $this->_model = Player::model()->findByPk($this->id);
         }
 
         return $this->_model;
@@ -30,5 +31,10 @@ class EWebUser extends CWebUser
     {
         $user = $this->loadUser();
         return $user->f_name . " " . $user->l_name;
+    }
+
+    function getUser()
+    {
+        return $this->loadUser();
     }
 }

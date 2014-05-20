@@ -27,7 +27,8 @@
                 // array('label'=>'Womens League', 'url' => 'http://women.austinspremierleague.com/', 'linkOptions' => array('target' => '_blank')),
                 array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
                 array('label'=>'Hello ('.Yii::app()->user->name.')', 'url'=> '#', 'visible'=>!Yii::app()->user->isGuest, 'items' => array(
-                    array('label' => 'Admin', 'url' => array('//admin')),
+                    array('label' => 'Admin', 'url' => array('//admin'),'visible' => Yii::app()->user->isAdmin()),
+                    array('label' => 'Portal', 'url' => array('//portal')),
                     array('label' => 'Logout', 'url' => array('/site/logout')),
                 )),
             ),

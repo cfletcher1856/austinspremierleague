@@ -7,6 +7,7 @@
  */
 class UserIdentity extends CUserIdentity
 {
+	const ERROR_NOT_ACTIVE = 'Player is not active this season.';
 	private $_id;
 	private $_user;
 
@@ -21,12 +22,14 @@ class UserIdentity extends CUserIdentity
 	public function authenticate()
 	{
 		$username = strtolower($this->username);
-		$this->_user = $user = User::model()->find('LOWER(email)=? and password=?', array($username, md5($this->password)));
+		$this->_user = $user = Player::model()->find('LOWER(email)=? and password=?', array($username, md5($this->password)));
 
 		if($user === null){
 			$this->errorCode = self::ERROR_USERNAME_INVALID;
 		} elseif(!$user->validatePassword($this->password)) {
 			$this->errorCode = self::ERROR_PASSWORD_INVALID;
+		} elseif($user->active != 1){
+			$this->errorCode = self::ERROR_NOT_ACTIVE;
 		} else {
 			$this->_id = $user->id;
 			$this->errorCode = self::ERROR_NONE;

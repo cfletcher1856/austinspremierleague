@@ -460,7 +460,7 @@ class SiteController extends Controller
 	{
 		$model = new ResetPasswordForm;
 
-		$user = User::model()->findByAttributes(array(
+		$user = Player::model()->findByAttributes(array(
 			'reset_token' => $uuid
 		));
 

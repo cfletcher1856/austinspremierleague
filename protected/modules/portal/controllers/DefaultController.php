@@ -1,9 +1,13 @@
 <?php
 
-class DefaultController extends Controller
+class DefaultController extends PortalController
 {
 	public function actionIndex()
 	{
-		$this->render('index');
+        $data = Widget::getWidgetData();
+        // echo "<pre>";print_r($data);echo "</pre>";
+		$this->render('index', array(
+            'data' => $data
+        ));
 	}
 }
