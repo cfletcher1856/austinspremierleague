@@ -16,7 +16,7 @@
 
 	<?php echo $form->textFieldRow($model,'date',array('class'=>'span5 datepicker')); ?>
 
-	<?php echo $form->textFieldRow($model,'amount',array('class'=>'span5','maxlength'=>10)); ?>
+	<?php echo $form->numberFieldRow($model,'amount',array('class'=>'span5','maxlength'=>10)); ?>
 
 	<?php echo $form->dropDownListRow($model,'txn_type', $model->getTransactionDropDown(), array('class'=>'span5')); ?>
 

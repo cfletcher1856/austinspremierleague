@@ -75,7 +75,7 @@ class PlayerSeasonController extends AdminController
 	{
 		$model = new PlayerSeason;
 		$season = Season::model()->findByPk($id);
-		$divisions = Division::model()->findAll();
+		$divisions = Division::model()->findAllByAttributes(array('active' => 1));
 		$_activePlayers = Player::model()->findAllByAttributes(array(
 			'active' => 1
 		));

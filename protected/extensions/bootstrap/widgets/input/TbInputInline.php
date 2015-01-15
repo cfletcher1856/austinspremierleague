@@ -58,4 +58,16 @@ class TbInputInline extends TbInputVertical
 		echo $this->form->textField($this->model, $this->attribute, $this->htmlOptions);
 		echo $this->getAppend();
 	}
+
+	/**
+	 * Renders a number field.
+	 * @return string the rendered content
+	 */
+	protected function numberField()
+	{
+		$this->htmlOptions['placeholder'] = $this->model->getAttributeLabel($this->attribute);
+		echo $this->getPrepend();
+		echo $this->form->numberField($this->model, $this->attribute, $this->htmlOptions);
+		echo $this->getAppend();
+	}
 }

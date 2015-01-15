@@ -2,6 +2,7 @@
 Yii::import('application.modules.admin.models.Payment');
 Yii::import('application.modules.admin.models.Season');
 Yii::import('application.modules.admin.models.Schedule');
+Yii::import('application.modules.admin.models.Membership');
 
 class Widget
 {
@@ -17,8 +18,30 @@ class Widget
         self::getMakeUpGames();
         self::getWeeksMissed();
         self::getPaymentsFees();
+        self::getMembershipData();
 
         return self::$widget_data;
+    }
+
+    private static function getMembershipData()
+    {
+        $memberships = Membership::model()->findAllByAttributes(array(
+            'player_id' => self::$player->id
+        ), array(
+            'order' => 'expires_on desc'
+        ));
+
+        $current_membership = $memberships[0];
+
+        $now = new DateTime();
+        $expires_on = new DateTime($current_membership->expires_on);
+
+        self::$widget_data['Membership']['expires_on'] = $expires_on->format('m/d/Y');
+        if($current_membership && $now <= $expires_on){
+            self::$widget_data['Membership']['status'] = 'Active';
+        } else {
+            self::$widget_data['Membership']['status'] = 'Expired';
+        }
     }
 
     private static function getDuesOwed()

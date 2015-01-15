@@ -5,3 +5,6 @@ assets/*
 error_log
 profiles/*
 /index.php
+
+pa_scheduler.py
+email.log

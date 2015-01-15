@@ -169,6 +169,19 @@ class TbInputVertical extends TbInput
 	}
 
 	/**
+	 * Renders a number field.
+	 * @return string the rendered content
+	 */
+	protected function numberField()
+	{
+		echo $this->getLabel();
+		echo $this->getPrepend();
+		echo $this->form->numberField($this->model, $this->attribute, $this->htmlOptions);
+		echo $this->getAppend();
+		echo $this->getError().$this->getHint();
+	}
+
+	/**
 	 * Renders a CAPTCHA.
 	 * @return string the rendered content
 	 */

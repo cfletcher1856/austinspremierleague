@@ -8,10 +8,6 @@
 
     $this->menu=array(
         array('label' => 'Actions'),
-    	array('label'=>'List PlayerSeason','url'=>array('index')),
-    	array('label'=>'Create PlayerSeason','url'=>array('create')),
-    	array('label'=>'View PlayerSeason','url'=>array('view','id'=>$model->id)),
-    	array('label'=>'Manage PlayerSeason','url'=>array('admin')),
     );
 ?>
 

@@ -19,7 +19,7 @@
         <th>Matches Played</th>
         <th>Won</th>
         <th>Lost</th>
-        <th>Draw</th>
+        <th class="right-divider">Draw</th>
         <th>Points</th>
         <th>Leg Differential</th>
         <th>Season 3 Dart Avg</th>
@@ -59,7 +59,7 @@
         <td><?php echo $standing['played']; ?></td>
         <td><?php echo $standing['matches_won']; ?></td>
         <td><?php echo $standing['matches_lost']; ?></td>
-        <td><?php echo $standing['matches_draw']; ?></td>
+        <td class="right-divider"><?php echo $standing['matches_draw']; ?></td>
         <td><?php echo $standing['points']; ?></td>
         <td>
             <?php
@@ -72,7 +72,7 @@
     <?php $ctr++; endforeach; ?>
     <?php else: ?>
     <tr>
-        <td colspan="9">No matches have been played yet</td>
+        <td colspan="10">No matches have been played yet</td>
     </tr>
     <?php endif; ?>
 </tbody>
@@ -80,7 +80,7 @@
 
 
 <div class="row">
-    <div class="span3">
+    <div class="span2">
         <strong>Highest Out</strong><br />
         <?php
             foreach($stats[$division]['high_out'] as $num => $stat){
@@ -90,7 +90,7 @@
             }
         ?>
     </div>
-    <div class="span3">
+    <div class="span2">
         <strong>Most 93+ Scores</strong><br />
         <?php
             foreach($stats[$division]['quality_points'] as $num => $stat){
@@ -100,7 +100,17 @@
             }
         ?>
     </div>
-    <div class="span3">
+    <div class="span2">
+        <strong>Avg 93+ Score per leg</strong><br />
+        <?php
+            foreach($stats[$division]['average_quality_points'] as $num => $stat){
+                if($stats[$division]['average_quality_points'][0]['avg_qps'] == $stat['avg_qps']){
+                    echo $stat['player'] . " (" . $stat['avg_qps'] . ")<br />";
+                }
+            }
+        ?>
+    </div>
+    <div class="span2">
         <strong>Most 100+ Checkouts</strong><br />
         <?php
             foreach($stats[$division]['ton_plus_checkouts'] as $num => $stat){
@@ -110,7 +120,7 @@
             }
         ?>
     </div>
-    <div class="span3">
+    <div class="span2">
         <strong>Most 180's</strong><br />
         <?php
             foreach($stats[$division]['ton_eighties'] as $num => $stat){

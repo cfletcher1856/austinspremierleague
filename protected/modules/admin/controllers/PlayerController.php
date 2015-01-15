@@ -113,7 +113,7 @@ class PlayerController extends AdminController
 			$model->attributes=$_POST['Player'];
 			if($model->save()){
 				Yii::app()->user->setFlash('success', 'Player Updated');
-				$this->redirect(array('view','id'=>$model->id));
+				$this->redirect(array('index'));
 			}
 		}
 

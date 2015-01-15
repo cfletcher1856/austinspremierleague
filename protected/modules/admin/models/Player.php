@@ -1,5 +1,6 @@
 <?php
 Yii::import('application.modules.admin.models.*');
+Yii::import('application.models.Standings');
 /**
  * This is the model class for table "player".
  *
@@ -125,7 +126,7 @@ class Player extends CActiveRecord
 	{
 		if(!$match_num && !$season_id && !$week)
 		{
-			return array();
+			return self::getPlayersDropDown();
 		}
 
 		$sql = "

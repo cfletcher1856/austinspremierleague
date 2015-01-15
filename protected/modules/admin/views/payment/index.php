@@ -21,6 +21,7 @@
         array('name'=>'date', 'header'=>'Date', 'value' => 'Yii::app()->dateFormatter->format("MM/dd/yyyy",strtotime($data->date))'),
         array('name'=>'amount', 'header'=>'Amount', 'value' => 'Payment::displayMoney($data->amount)'),
         array('name'=>'txn_type', 'header'=>'Transaction Type', 'value' => 'ucfirst($data->txn_type)'),
+        array('name'=>'collected_by', 'header'=>'Collected By', 'value' => '$data->getCollectedByName()'),
         array(
             'class'=>'bootstrap.widgets.TbButtonColumn',
             'htmlOptions'=>array('style'=>'width: 50px; text-align: center;'),

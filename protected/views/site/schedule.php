@@ -7,15 +7,15 @@
 
 <div class="row">
     <div class="span1">
-        <a href="/schedule/Spring+2014/Division+1" class="btn btn-mini btn-primary">Division 1</a>
+        <a href="/schedule/Spring+2015/Division+1" class="btn btn-mini btn-primary">Division 1</a>
     </div>
 
     <div class="span1">
-        <a href="/schedule/Spring+2014/Division+2" class="btn btn-mini btn-primary">Division 2</a>
+        <a href="/schedule/Spring+2015/Division+2" class="btn btn-mini btn-primary">Division 2</a>
     </div>
 
     <div class="span3">
-        <a href="/schedule/Spring+2014/Division+3" class="btn btn-mini btn-primary">Division 3</a>
+        <a href="/schedule/Spring+2015/Division+3" class="btn btn-mini btn-primary">Division 3</a>
     </div>
 </div>
 

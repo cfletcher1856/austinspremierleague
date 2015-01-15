@@ -6,9 +6,11 @@
  * The followings are the available columns in table 'payment':
  * @property integer $id
  * @property integer $player_id
+ * @property integer $player_season_id
  * @property string $date
  * @property string $amount
  * @property string $txn_type
+ * @property integer $collected_by
  */
 class Payment extends CActiveRecord
 {
@@ -38,15 +40,15 @@ class Payment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('player_id, amount, txn_type', 'required'),
-			array('player_id', 'numerical', 'integerOnly'=>true),
+			array('player_id, amount, txn_type, collected_by', 'required'),
+			array('player_id, collected_by', 'numerical', 'integerOnly'=>true),
 			array('amount', 'length', 'max'=>10),
 			array('amount', 'type', 'type' => 'float'),
 			array('txn_type', 'length', 'max'=>15),
 			array('date', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('player_id, date, amount', 'safe', 'on'=>'search'),
+			array('player_id, date, amount, collected_by', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,7 +60,8 @@ class Payment extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'player' => array(self::BELONGS_TO, 'Player', 'player_id')
+			'player' => array(self::BELONGS_TO, 'Player', 'player_id'),
+			'collector' => array(self::BELONGS_TO, 'Player', 'collected_by')
 		);
 	}
 
@@ -73,6 +76,7 @@ class Payment extends CActiveRecord
 			'date' => 'Date',
 			'amount' => 'Amount',
 			'txn_type' => 'Transaction Type',
+			'collected_by' => 'Collected By',
 		);
 	}
 
@@ -92,6 +96,7 @@ class Payment extends CActiveRecord
 		$criteria->compare('date',$this->date,true);
 		$criteria->compare('amount',$this->amount,true);
 		$criteria->compare('txn_type',$this->txn_type,true);
+		$criteria->compare('collected_by',$this->collected_by);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -107,5 +112,12 @@ class Payment extends CActiveRecord
 	public function getTransactionDropDown()
 	{
 		return array('payment' => "Payment", 'fee' => 'Fee');
+	}
+
+	public function getCollectedByName()
+	{
+		if($this->collector){
+			return $this->collector->getFullName();
+		}
 	}
 }

@@ -9,6 +9,15 @@
 ?>
 
 <div class="row">
+    <div class="well widget-well span8" style="width:806px">
+        <h3>Membership status</h3>
+        <span class="membership-<?php echo strtolower($data['Membership']['status']); ?>">
+            <?php echo $data['Membership']['status']; ?>
+        </span> - Expires on: <?php echo $data['Membership']['expires_on']; ?>
+    </div>
+</div>
+
+<div class="row">
     <div class="well widget-well span4">
         <h3>Dues Owed</h3>
         <p><?php echo $data['DuesOwed']; ?></p>

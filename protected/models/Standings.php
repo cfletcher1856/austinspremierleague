@@ -55,48 +55,52 @@ class Standings{
 
         $pids = Standings::getPlayersByDivision($division_id);
 
-        $sql = "
-            SELECT
-                p.id as player_id,
-                CONCAT(f_name, ' ', l_name) as player,
-                COUNT( schedule_id ) AS played,
-                SUM(
-                    CASE WHEN legs_won > legs_lost
-                    THEN 1 ELSE 0
-                    END
-                ) AS matches_won,
-                SUM(
-                    CASE WHEN legs_won < legs_lost
-                    THEN 1 ELSE 0
-                    END
-                ) AS matches_lost,
-                SUM(
-                    CASE WHEN legs_won = legs_lost
-                    THEN 1 ELSE 0
-                    END
-                ) AS matches_draw,
-                SUM( legs_won - legs_lost ) AS diff,
-                SUM( points ) as points,
-                SUM( m.quality_points ) as qps
-            FROM  `match` as m
-            INNER JOIN `player` as p
-            ON m.player_id = p.id
-            INNER JOIN `schedule` as s
-            ON m.schedule_id = s.id
-            WHERE s.season_id = $season_id
-            AND p.id IN ($pids)
-        ";
+        if($pids){
+            $sql = "
+                SELECT
+                    p.id as player_id,
+                    CONCAT(f_name, ' ', l_name) as player,
+                    COUNT( schedule_id ) AS played,
+                    SUM(
+                        CASE WHEN legs_won > legs_lost
+                        THEN 1 ELSE 0
+                        END
+                    ) AS matches_won,
+                    SUM(
+                        CASE WHEN legs_won < legs_lost
+                        THEN 1 ELSE 0
+                        END
+                    ) AS matches_lost,
+                    SUM(
+                        CASE WHEN legs_won = legs_lost
+                        THEN 1 ELSE 0
+                        END
+                    ) AS matches_draw,
+                    SUM( legs_won - legs_lost ) AS diff,
+                    SUM( points ) as points,
+                    SUM( m.quality_points ) as qps
+                FROM  `match` as m
+                INNER JOIN `player` as p
+                ON m.player_id = p.id
+                INNER JOIN `schedule` as s
+                ON m.schedule_id = s.id
+                WHERE s.season_id = $season_id
+                AND p.id IN ($pids)
+            ";
 
-        if($week > 0){
-            $sql .= "AND s.week <= $week";
+            if($week > 0){
+                $sql .= "AND s.week <= $week";
+            }
+
+            $sql .="
+                GROUP BY CONCAT(f_name, ' ', l_name)
+                ORDER BY points DESC , diff DESC, qps DESC
+            ";
+
+            return Yii::app()->db->createCommand($sql)->queryAll();
         }
 
-        $sql .="
-            GROUP BY CONCAT(f_name, ' ', l_name)
-            ORDER BY points DESC , diff DESC, qps DESC
-        ";
-
-        return Yii::app()->db->createCommand($sql)->queryAll();
+        return array();
     }
 
     static function getMostTonEighties($division_id=1)
@@ -105,22 +109,26 @@ class Standings{
 
         $pids = Standings::getPlayersByDivision($division_id);
 
-        $sql = "
-            SELECT
-                CONCAT(f_name, ' ', l_name) as player,
-                SUM(ton_eighties) as ton_eighties
-            FROM `match` as m
-            INNER JOIN `player` as p
-            on m.player_id = p.id
-            INNER JOIN `schedule` as s
-            ON m.schedule_id = s.id
-            WHERE s.season_id = $season_id
-            AND p.id IN ($pids)
-            GROUP BY CONCAT(f_name, ' ', l_name)
-            ORDER BY ton_eighties DESC
-        ";
+        if($pids){
+            $sql = "
+                SELECT
+                    CONCAT(f_name, ' ', l_name) as player,
+                    SUM(ton_eighties) as ton_eighties
+                FROM `match` as m
+                INNER JOIN `player` as p
+                on m.player_id = p.id
+                INNER JOIN `schedule` as s
+                ON m.schedule_id = s.id
+                WHERE s.season_id = $season_id
+                AND p.id IN ($pids)
+                GROUP BY CONCAT(f_name, ' ', l_name)
+                ORDER BY ton_eighties DESC
+            ";
 
-        return Yii::app()->db->createCommand($sql)->queryAll();
+            return Yii::app()->db->createCommand($sql)->queryAll();
+        }
+
+        return array();
     }
 
     static function getMostQualityPoints($division_id=1)
@@ -129,22 +137,54 @@ class Standings{
 
         $pids = Standings::getPlayersByDivision($division_id);
 
-        $sql = "
-            SELECT
-                CONCAT(f_name, ' ', l_name) as player,
-                SUM(quality_points) as quality_points
-            FROM `match` as m
-            INNER JOIN `player` as p
-            on m.player_id = p.id
-            INNER JOIN `schedule` as s
-            ON m.schedule_id = s.id
-            WHERE s.season_id = $season_id
-            AND p.id IN ($pids)
-            GROUP BY CONCAT(f_name, ' ', l_name)
-            ORDER BY quality_points DESC
-        ";
+        if($pids){
+            $sql = "
+                SELECT
+                    CONCAT(f_name, ' ', l_name) as player,
+                    SUM(quality_points) as quality_points
+                FROM `match` as m
+                INNER JOIN `player` as p
+                on m.player_id = p.id
+                INNER JOIN `schedule` as s
+                ON m.schedule_id = s.id
+                WHERE s.season_id = $season_id
+                AND p.id IN ($pids)
+                GROUP BY CONCAT(f_name, ' ', l_name)
+                ORDER BY quality_points DESC
+            ";
 
-        return Yii::app()->db->createCommand($sql)->queryAll();
+            return Yii::app()->db->createCommand($sql)->queryAll();
+        }
+
+        return array();
+    }
+
+    static function getAvgQualityPoints($division_id=1){
+        $season_id = Standings::getCurrentSeason()->id;
+
+        $pids = Standings::getPlayersByDivision($division_id);
+
+        if($pids){
+            $sql = "
+                SELECT
+                    CONCAT(f_name, ' ', l_name) as player,
+                    round(sum(quality_points) / (sum(legs_won) + sum(legs_lost)), 2) as avg_qps
+                FROM `match` as m
+                INNER JOIN `player` as p
+                on m.player_id = p.id
+                INNER JOIN `schedule` as s
+                ON m.schedule_id = s.id
+                WHERE s.season_id = $season_id
+                AND p.id IN ($pids)
+                GROUP BY CONCAT(f_name, ' ', l_name)
+                ORDER BY round(sum(quality_points) / (sum(legs_won) + sum(legs_lost)), 2) desc
+            ";
+
+            return Yii::app()->db->createCommand($sql)->queryAll();
+
+        }
+
+        return array();
     }
 
     static function getMostTonPlusCheckouts($division_id=1){
@@ -152,25 +192,29 @@ class Standings{
 
         $pids = Standings::getPlayersByDivision($division_id);
 
-        $sql = "
-            SELECT
-                CONCAT(f_name, ' ', l_name) as player,
-                COUNT(md.id) as ton_plus_checkouts
-            FROM `match` as m
-            INNER JOIN `match_details` as md
-            ON m.id = md.match_id
-            INNER JOIN `player` as p
-            on m.player_id = p.id
-            INNER JOIN `schedule` as s
-            ON m.schedule_id = s.id
-            WHERE s.season_id = $season_id
-            AND p.id IN ($pids)
-            AND md.out >= 100
-            GROUP BY CONCAT(f_name, ' ', l_name)
-            ORDER BY ton_plus_checkouts DESC
-        ";
+        if($pids){
+            $sql = "
+                SELECT
+                    CONCAT(f_name, ' ', l_name) as player,
+                    COUNT(md.id) as ton_plus_checkouts
+                FROM `match` as m
+                INNER JOIN `match_details` as md
+                ON m.id = md.match_id
+                INNER JOIN `player` as p
+                on m.player_id = p.id
+                INNER JOIN `schedule` as s
+                ON m.schedule_id = s.id
+                WHERE s.season_id = $season_id
+                AND p.id IN ($pids)
+                AND md.out >= 100
+                GROUP BY CONCAT(f_name, ' ', l_name)
+                ORDER BY ton_plus_checkouts DESC
+            ";
 
-        return Yii::app()->db->createCommand($sql)->queryAll();
+            return Yii::app()->db->createCommand($sql)->queryAll();
+        }
+
+        return array();
     }
 
     static function getHighOut($division_id=1)
@@ -179,23 +223,27 @@ class Standings{
 
         $pids = Standings::getPlayersByDivision($division_id);
 
-        $sql = "
-            SELECT
-                CONCAT(f_name, ' ', l_name) as player,
-                MAX(m.out) as high_out,
-                s.date as date
-            FROM `match_details` as m
-            INNER JOIN `player` as p
-            on m.player_id = p.id
-            INNER JOIN `schedule` as s
-            ON m.schedule_id = s.id
-            WHERE s.season_id = $season_id
-            AND p.id IN ($pids)
-            GROUP BY CONCAT(f_name, ' ', l_name)
-            ORDER BY high_out DESC
-        ";
+        if($pids){
+            $sql = "
+                SELECT
+                    CONCAT(f_name, ' ', l_name) as player,
+                    MAX(m.out) as high_out,
+                    s.date as date
+                FROM `match_details` as m
+                INNER JOIN `player` as p
+                on m.player_id = p.id
+                INNER JOIN `schedule` as s
+                ON m.schedule_id = s.id
+                WHERE s.season_id = $season_id
+                AND p.id IN ($pids)
+                GROUP BY CONCAT(f_name, ' ', l_name)
+                ORDER BY high_out DESC
+            ";
 
-        return Yii::app()->db->createCommand($sql)->queryAll();
+            return Yii::app()->db->createCommand($sql)->queryAll();
+        }
+
+        return array();
     }
 
     static function getSeasonDartAvergae($player_id)
@@ -225,17 +273,22 @@ class Standings{
 
         $ids = implode($match_ids, ', ');
 
-        $sql = "
-            SELECT
-                SUM(md.darts_thrown) as darts_thrown,
-                SUM(md.points_left) as points_left
-            FROM `match_details` as md
-            INNER JOIN `match` as m
-            ON m.id = md.match_id
-            WHERE m.id IN ($ids)
-        ";
+        $details['points_left'] = 0;
+        $details['darts_thrown'] = 0;
 
-        $details = Yii::app()->db->createCommand($sql)->queryRow();
+        if($ids){
+            $sql = "
+                SELECT
+                    SUM(md.darts_thrown) as darts_thrown,
+                    SUM(md.points_left) as points_left
+                FROM `match_details` as md
+                INNER JOIN `match` as m
+                ON m.id = md.match_id
+                WHERE m.id IN ($ids)
+            ";
+
+            $details = Yii::app()->db->createCommand($sql)->queryRow();
+        }
 
         return Player::calculateThreeDartAverage($legs, $details['points_left'],$details['darts_thrown']);
     }
@@ -263,17 +316,22 @@ class Standings{
 
         $ids = implode($match_ids, ', ');
 
-        $sql = "
-            SELECT
-                SUM(md.darts_thrown) as darts_thrown,
-                SUM(md.points_left) as points_left
-            FROM `match_details` as md
-            INNER JOIN `match` as m
-            ON m.id = md.match_id
-            WHERE m.id IN ($ids)
-        ";
+        $details['points_left'] = 0;
+        $details['darts_thrown'] = 0;
 
-        $details = Yii::app()->db->createCommand($sql)->queryRow();
+        if($ids){
+            $sql = "
+                SELECT
+                    SUM(md.darts_thrown) as darts_thrown,
+                    SUM(md.points_left) as points_left
+                FROM `match_details` as md
+                INNER JOIN `match` as m
+                ON m.id = md.match_id
+                WHERE m.id IN ($ids)
+            ";
+
+            $details = Yii::app()->db->createCommand($sql)->queryRow();
+        }
 
         return Player::calculateThreeDartAverage($legs, $details['points_left'],$details['darts_thrown']);
     }
@@ -305,7 +363,15 @@ class Standings{
             GROUP BY CONCAT(f_name, ' ', l_name)
         ";
 
-        return Yii::app()->db->createCommand($sql)->queryRow();
+        $rows = Yii::app()->db->createCommand($sql)->queryRow();
+
+        if(!$rows){
+            $rows['matches_won'] = 0;
+            $rows['matches_lost'] = 0;
+            $rows['matches_draw'] = 0;
+        }
+
+        return $rows;
     }
 
     private static function twoDartCheckoutPercentage($outs){

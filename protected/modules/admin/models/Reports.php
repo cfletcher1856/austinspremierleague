@@ -44,6 +44,7 @@ class Reports{
             'collected' => $collected,
             'season_total' => $season_total,
             'outstanding' => $season_total - $collected,
+            'payments' => $payments,
         );
     }
 }

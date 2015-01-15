@@ -36,7 +36,7 @@ class Statistics{
 
     static function getDivisionStats()
     {
-        $divisions = Division::model()->findAll();
+        $divisions = Division::model()->findAllByAttributes(array('active' => 1));
         $season_id = Standings::getCurrentSeason()->id;
 
         $total_stats = array();
@@ -44,68 +44,79 @@ class Statistics{
         {
             $pids = Standings::getPlayersByDivision($division->id, $season_id);
             // echo "<pre>";print_r($pids);echo "</pre>";
-            $sql = "
-                SELECT
-                    CONCAT(f_name, ' ', l_name) as player,
-                    SUM( m.ton_eighties ) AS ton_eighties,
-                    SUM( m.quality_points ) as qps
-                FROM  `match` as m
-                INNER JOIN `player` as p
-                ON m.player_id = p.id
-                INNER JOIN `schedule` as s
-                ON m.schedule_id = s.id
-                WHERE s.season_id = $season_id
-                AND p.id IN ($pids)
-                GROUP BY CONCAT(f_name, ' ', l_name)
-            ";
+            $total_stats[$division->id]['ton_eighties'] = array();
+            $total_stats[$division->id]['qps'] = array();
+            $total_stats[$division->id]['qps_avg'] = array();
+            $total_stats[$division->id]['high_out'] = array();
+            $total_stats[$division->id]['ton_plus'] = array();
 
-            $thing = Yii::app()->db->createCommand($sql)->queryAll();
-            foreach($thing as $key => $stat){
-                $total_stats[$division->id]['ton_eighties'][$stat['player']] = $stat['ton_eighties'];
-                $total_stats[$division->id]['qps'][$stat['player']] = $stat['qps'];
-            }
+            if($pids){
+                $sql = "
+                    SELECT
+                        CONCAT(f_name, ' ', l_name) as player,
+                        SUM( m.ton_eighties ) AS ton_eighties,
+                        SUM( m.quality_points ) as qps,
+                        SUM( m.legs_won) as legs_won,
+                        SUM( m.legs_lost) as legs_lost
+                    FROM  `match` as m
+                    INNER JOIN `player` as p
+                    ON m.player_id = p.id
+                    INNER JOIN `schedule` as s
+                    ON m.schedule_id = s.id
+                    WHERE s.season_id = $season_id
+                    AND p.id IN ($pids)
+                    GROUP BY CONCAT(f_name, ' ', l_name)
+                ";
 
-            $sql = "
-                SELECT
-                    CONCAT(f_name, ' ', l_name) as player,
-                    MAX( md.out ) as high_out
-                FROM  `match` as m
-                INNER JOIN `match_details` as md
-                ON m.id = md.match_id
-                INNER JOIN `player` as p
-                ON m.player_id = p.id
-                INNER JOIN `schedule` as s
-                ON m.schedule_id = s.id
-                WHERE s.season_id = $season_id
-                AND p.id IN ($pids)
-                GROUP BY CONCAT(f_name, ' ', l_name)
-            ";
+                $thing = Yii::app()->db->createCommand($sql)->queryAll();
+                foreach($thing as $key => $stat){
+                    $total_stats[$division->id]['ton_eighties'][$stat['player']] = $stat['ton_eighties'];
+                    $total_stats[$division->id]['qps'][$stat['player']] = $stat['qps'];
+                    $total_stats[$division->id]['qps_avg'][$stat['player']] = round($stat['qps'] / ((int)$stat['legs_won'] + (int)$stat['legs_lost']), 2);
+                }
 
-            $thing = Yii::app()->db->createCommand($sql)->queryAll();
-            foreach($thing as $key => $stat){
-                $total_stats[$division->id]['high_out'][$stat['player']] = $stat['high_out'];
-            }
+                $sql = "
+                    SELECT
+                        CONCAT(f_name, ' ', l_name) as player,
+                        MAX( md.out ) as high_out
+                    FROM  `match` as m
+                    INNER JOIN `match_details` as md
+                    ON m.id = md.match_id
+                    INNER JOIN `player` as p
+                    ON m.player_id = p.id
+                    INNER JOIN `schedule` as s
+                    ON m.schedule_id = s.id
+                    WHERE s.season_id = $season_id
+                    AND p.id IN ($pids)
+                    GROUP BY CONCAT(f_name, ' ', l_name)
+                ";
 
-            $sql = "
-                SELECT
-                    CONCAT(f_name, ' ', l_name) as player,
-                    COUNT(md.id) as ton_plus_checkouts
-                FROM `match` as m
-                INNER JOIN `match_details` as md
-                ON m.id = md.match_id
-                INNER JOIN `player` as p
-                on m.player_id = p.id
-                INNER JOIN `schedule` as s
-                ON m.schedule_id = s.id
-                WHERE s.season_id = $season_id
-                AND p.id IN ($pids)
-                AND md.out >= 100
-                GROUP BY CONCAT(f_name, ' ', l_name)
-            ";
+                $thing = Yii::app()->db->createCommand($sql)->queryAll();
+                foreach($thing as $key => $stat){
+                    $total_stats[$division->id]['high_out'][$stat['player']] = $stat['high_out'];
+                }
 
-            $thing = Yii::app()->db->createCommand($sql)->queryAll();
-            foreach($thing as $key => $stat){
-                $total_stats[$division->id]['ton_plus'][$stat['player']] = $stat['ton_plus_checkouts'];
+                $sql = "
+                    SELECT
+                        CONCAT(f_name, ' ', l_name) as player,
+                        COUNT(md.id) as ton_plus_checkouts
+                    FROM `match` as m
+                    INNER JOIN `match_details` as md
+                    ON m.id = md.match_id
+                    INNER JOIN `player` as p
+                    on m.player_id = p.id
+                    INNER JOIN `schedule` as s
+                    ON m.schedule_id = s.id
+                    WHERE s.season_id = $season_id
+                    AND p.id IN ($pids)
+                    AND md.out >= 100
+                    GROUP BY CONCAT(f_name, ' ', l_name)
+                ";
+
+                $thing = Yii::app()->db->createCommand($sql)->queryAll();
+                foreach($thing as $key => $stat){
+                    $total_stats[$division->id]['ton_plus'][$stat['player']] = $stat['ton_plus_checkouts'];
+                }
             }
         }
         return $total_stats;

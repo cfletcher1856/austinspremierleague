@@ -281,7 +281,9 @@ class MatchController extends AdminController
 	}
 
 	public function actionEmail(){
-		$divisions = Division::model()->findAll();
+		$divisions = Division::model()->findAllByAttributes(array(
+			'active' => 1
+		));
 		$_standings = array();
 		foreach($divisions as $division){
 			$standings = Standings::getStandings($division->id);

@@ -27,6 +27,7 @@ abstract class TbInput extends CInputWidget
 	const TYPE_TEXT = 'text';
 	const TYPE_CAPTCHA = 'captcha';
 	const TYPE_UNEDITABLE = 'uneditable';
+	const TYPE_NUMBER = 'number';
 
 	/**
 	 * @var TbActiveForm the associated form widget.
@@ -228,6 +229,10 @@ abstract class TbInput extends CInputWidget
 			case 'textfield': // backwards compatibility
 			case self::TYPE_TEXT:
 				$this->textField();
+				break;
+
+			case self::TYPE_NUMBER:
+				$this->numberField();
 				break;
 
 			case self::TYPE_CAPTCHA:
@@ -461,6 +466,13 @@ abstract class TbInput extends CInputWidget
 	 * @abstract
 	 */
 	abstract protected function textField();
+
+	/**
+	 * Renders a number field.
+	 * @return string the rendered content
+	 * @abstract
+	 */
+	abstract protected function numberField();
 
 	/**
 	 * Renders a CAPTCHA.

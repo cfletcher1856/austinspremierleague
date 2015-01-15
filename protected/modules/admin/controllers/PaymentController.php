@@ -59,6 +59,7 @@ class PaymentController extends AdminController
 
 			$o_date = $date = new DateTime($_POST['Payment']["date"]);
 			$model->date = $o_date->format("Y-m-d");
+			$model->collected_by = Yii::app()->user->id;
 
 			if($model->save()){
 				Yii::app()->user->setFlash('success', 'Payment Created');

@@ -7,6 +7,7 @@
     $this->menu=array(
         array('label' => 'Actions'),
         array('label'=>'Players', 'icon' => 'user', 'url'=>array('//admin/player/index')),
+        array('label'=>'Membership', 'icon' => 'user', 'url'=>array('//admin/membership/index')),
         array('label'=>'Payments', 'icon' => 'money','url'=>array('//admin/payment/index')),
         array('label'=>'Matches', 'icon' => 'bar-chart','url'=>array('//admin/match/index')),
         array('label'=>'Schedule', 'icon' => 'calendar','url'=>array('//admin/schedule/index')),
@@ -15,6 +16,7 @@
         array('label'=>'Bars', 'icon' => 'beer','url'=>array('//admin/bar/index')),
         array('label'=>'Reports', 'icon' => 'file-alt','url'=>array('//admin/reports/index')),
         array('label'=>'Blind Draw', 'icon' => 'file-alt','url'=>array('//admin/blindDraw/index')),
+        array('label'=>'Upcoming Season', 'icon' => 'envelope','url'=>array('//admin/upcomingSeason/index')),
     );
     $this->page_header = 'Admin';
 ?>

@@ -4,33 +4,12 @@ Yii::import('application.modules.admin.models.Schedule');
 Yii::import('application.modules.admin.models.Bar');
 Yii::import('application.modules.admin.models.Player');
 
-class EmailscheduleCommand extends CConsoleCommand
+
+class ScheduleData
 {
     private $this_weeks_schedule;
 
-    public function run($args)
-    {
-        $players_schedule = $this->getPlayersSchedule();
-        $schedule = $this->getThisWeeksSchedule();
-
-        $from_headers = "From: Austin's Premier League <cfletcher1856@gmail.com>";
-
-        foreach($schedule as $s)
-        {
-            $bar = $s->getBar();
-            $board = $s->board;
-            $week = $s->week;
-            $games = $players_schedule[$s->h_player->email];
-            $email_body = $this->generateEmail($week, $bar, $board, $games);
-            // For testing
-            // if($s->h_player->email == 'cfletcher1856@gmail.com' || $s->h_player->email == 'ryan.bird16@gmail.com')
-            // {
-                mail($s->h_player->email, "APL Week {$week} schedule", $email_body, $from_headers);
-            // }
-        }
-    }
-
-    private function getPlayersSchedule()
+    public function getPlayersSchedule()
     {
         $schedule = $this->getThisWeeksSchedule();
 
@@ -45,7 +24,7 @@ class EmailscheduleCommand extends CConsoleCommand
         return $_schedule;
     }
 
-    private function generateEmail($week, $bar, $board, $games)
+    public function generateEmail($week, $bar, $board, $games)
     {
         $now = new DateTime();
         $today = $now->format("m/d/Y");
@@ -62,7 +41,7 @@ EOB;
         return $body;
     }
 
-    private function getThisWeeksSchedule()
+    public function getThisWeeksSchedule()
     {
         if($this->this_weeks_schedule){
             return $this->this_weeks_schedule;
@@ -71,11 +50,49 @@ EOB;
         $now = new DateTime();
         $today = $now->format('Y-m-d');
 
+        $today = '2015-01-19';
+
         $schedule = Schedule::model()->findAllByAttributes(array(
             'date' => $today
         ));
 
         $this->this_weeks_schedule = $schedule;
         return $this->this_weeks_schedule;
+    }
+}
+
+
+class EmailscheduleCommand extends CConsoleCommand
+{
+    public function run($args)
+    {
+        $sd = new ScheduleData();
+
+        $players_schedule = $sd->getPlayersSchedule();
+        $schedule = $sd->getThisWeeksSchedule();
+
+        $from_headers = "From: Austin's Premier League <schedule@austinspremierleague.com>";
+
+        foreach($schedule as $s)
+        {
+            $bar = $s->getBar();
+            $board = $s->board;
+            $week = $s->week;
+            $games = $players_schedule[$s->h_player->email];
+            $email_body = $sd->generateEmail($week, $bar, $board, $games);
+            // Adding league balance
+            $email_body .= "\n\n";
+            $email_body .= "Your League Balance: $".$s->h_player->getLeagueBalance();
+            // For testing
+            // if($s->h_player->email == 'cfletcher1856@gmail.com' || $s->h_player->email == 'ryan.bird16@gmail.com')
+            // if($s->h_player->email == 'cfletcher1856@gmail.com')
+            // {
+                // echo "sending email to " . $s->h_player->email . "\n" . "APL Week {$week} schedule\n";
+                 mail($s->h_player->email, "APL Week {$week} schedule", $email_body, $from_headers, '-fschedule@austinspremierleague.com');
+                // mail('colin@protectamerica.com', "APL Week {$week} schedule", $email_body, $from_headers, '-fschedule@austinspremierleague.com');
+            // }
+        }
+
+        mail('cfletcher1856@gmail.com', "Done sending schedule", 'Script done running', $from_headers, '-fschedule@austinspremierleague.com');
     }
 }

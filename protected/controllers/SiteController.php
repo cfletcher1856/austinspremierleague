@@ -7,7 +7,9 @@ Yii::import('application.modules.admin.models.PlayerSeason');
 Yii::import('application.modules.admin.models.BlindDraw');
 Yii::import('application.models.Standings');
 Yii::import('application.models.Statistics');
+Yii::import('application.models.UpcomingSeason');
 Yii::import('ext.phpmailer.JPhpMailer');
+Yii::import('application.commands.emailscheduleCommand', true);
 
 class SiteController extends Controller
 {
@@ -46,9 +48,103 @@ class SiteController extends Controller
 		$this->render('about');
 	}
 
+	public function actionSummerSeason()
+	{
+		$this->render('summerseason');
+	}
+
+	public function actionTest()
+	{
+		$mail = new JPhpMailer();
+		$mail->isSMTP();
+		//Enable SMTP debugging
+		// 0 = off (for production use)
+		// 1 = client messages
+		// 2 = client and server messages
+		$mail->SMTPDebug = 2;
+		$mail->SingleTo = true;
+		//Ask for HTML-friendly debug output
+		$mail->Debugoutput = 'html';
+		//Set the hostname of the mail server
+		$mail->Host = "mail.austinspremierleague.com";
+		$mail->Hostname = 'austinspremierleague.com';
+		//Set the SMTP port number - likely to be 25, 465 or 587
+		$mail->Port = 465;
+		//Whether to use SMTP authentication
+		$mail->SMTPAuth = true;
+		$mail->SMTPSecure = 'ssl';
+		//Username to use for SMTP authentication
+		$mail->Username = "schedule@austinspremierleague.com";
+		//Password to use for SMTP authentication
+		$mail->Password = "RqUXQCiem(13";
+		//Set who the message is to be sent from
+		$mail->setFrom('schedule@austinspremierleague.com', 'APL');
+		//Set an alternative reply-to address
+		$mail->addReplyTo('schedule@austinspremierleague.com', 'APL');
+		//Set who the message is to be sent to
+		// $mail->addAddress('colin@protectamerica.com', 'Colin Fletcher');
+		$mail->addAddress('cfletcher1856@gmail.com', 'Colin Fletcher');
+		//Set the subject line
+		$mail->Subject = 'PHPMailer SMTP test Next one';
+		//Read an HTML message body from an external file, convert referenced images to embedded,
+		//convert HTML into a basic plain-text alternative body
+		$mail->msgHTML('Tomorrow meeting is canceled');
+		//Replace the plain text body with one created manually
+		$mail->AltBody = 'This is a plain-text message body';
+
+		// v=spf1 +a +mx +ip4:74.220.215.54 ?all
+
+		//send the message, check for errors
+		if (!$mail->send()) {
+		    echo "Mailer Error: " . $mail->ErrorInfo;
+		} else {
+		    echo "Message sent!";
+		}
+
+
+		mail('cfletcher1856@gmail.com', 'from php mail', 'from php mail', '', '-fschedule@austinspremierleague.com');
+
+
+		// $mail->isSMTP();
+		// try{
+		// 	$mail->SMTPDebug = 2;
+		// 	$mail->Debugoutput = 'html';
+		// 	$mail->SMTPAuth = true;
+		// 	$mail->SMTPSecure = 'ssl';
+		// 	$mail->Hostname = 'austinspremierleague.com';
+		// 	$mail->Host = 'host254.hostmonster.com';
+		// 	// $mail->Host = 'mail.colin-fletcher.com';
+		// 	$mail->Port = 465;
+		// 	// $mail->Username = 'colin@colin-fletcher.com';
+		// 	// $mail->Password = '2IPVMD=7]OEA';
+		// 	$mail->Username = 'schedule@austinspremierleague.com';
+		// 	$mail->password = '7)L7+?3}ci^*';
+
+		// 	$mail->setFrom('schedule@austinspremierleague.com', "Austin's Premier League");
+		// 	// $mail->AddReplyTo('colin@colin-fletcher.com', 'Testing');
+
+		// 	$mail->Subject = "PHPMailer through gmail";
+		// 	$mail->msgHTML("hi");
+
+		// 	$mail->addAddress('cfletcher1856@gmail.com', 'Colin Fletcher');
+		// 	$mail->Send();
+
+		// } catch (phpmailerException $e) {
+		// 	echo $e->errorMessage(); //Pretty error messages from PHPMailer
+		// } catch (Exception $e) {
+		// 	echo $e->getMessage(); //Boring error messages from anything else!
+		// }
+
+		echo "<pre>";
+		print_r($mail);
+		echo "</pre>";
+
+		$this->render('summerseason');
+	}
+
 	public function actionStandings()
 	{
-		$divisions = Division::model()->findAll();
+		$divisions = Division::model()->findAllByAttributes(array('active' => 1));
 		$_standings = array();
 		$previous_standings = array();
 		$last_week = Standings::getLastWeek();
@@ -57,6 +153,7 @@ class SiteController extends Controller
 			$_previous_weeks_standings = Standings::getStandings($division->id, $last_week);
 			$stats[$division->id]['ton_eighties'] = Standings::getMostTonEighties($division->id);
 			$stats[$division->id]['quality_points'] = Standings::getMostQualityPoints($division->id);
+			$stats[$division->id]['average_quality_points'] = Standings::getAvgQualityPoints($division->id);
 			$stats[$division->id]['high_out'] = Standings::getHighOut($division->id);
 			$stats[$division->id]['ton_plus_checkouts'] = Standings::getMostTonPlusCheckouts($division->id);
 			$_standings[$division->id] = $standings;
@@ -263,7 +360,77 @@ class SiteController extends Controller
 		$this->render('doubles',array('model'=>$model));
 	}
 
+	public function actionScheduleJson()
+	{
+		$sd = new ScheduleData();
+		$players_schedule = $sd->getPlayersSchedule();
+        $schedule = $sd->getThisWeeksSchedule();
+
+        $thisjson = array();
+
+        foreach($schedule as $s)
+        {
+            $bar = $s->getBar();
+            $board = $s->board;
+            $week = $s->week;
+            $games = $players_schedule[$s->h_player->email];
+            $email_body = $sd->generateEmail($week, $bar, $board, $games);
+            // Adding league balance
+            $email_body .= "\n\n";
+            $email_body .= "Your League Balance: $".$s->h_player->getLeagueBalance();
+
+            $thisjson[$s->h_player->email]['message'] = $email_body;
+            $thisjson[$s->h_player->email]['subject'] = "APL Week {$week} schedule";
+        }
+
+		header('Content-type: application/json');
+		print CJSON::encode($thisjson);
+		foreach (Yii::app()->log->routes as $route) {
+	        if($route instanceof CWebLogRoute) {
+	            $route->enabled = false; // disable any weblogroutes
+	        }
+	    }
+	    Yii::app()->end();
+	}
+
 	public function actionUpcomingSeason()
+	{
+		$model=new UpcomingSeasonForm;
+		$m = new UpcomingSeason;
+		if(isset($_POST['UpcomingSeasonForm']))
+		{
+			$model->attributes=$_POST['UpcomingSeasonForm'];
+			if($model->validate())
+			{
+				$now = new DateTime();
+				$m->name = $model->name;
+				$m->season = 'Spring 2015';
+				$m->qualifier = ($model->qualifier == 'Yes') ? 1 : 0;
+				$m->email = $model->email;
+				$m->body = $model->body;
+				$m->created = $now->format('Y-m-d H:i:s');
+				if(!$m->save()){
+					Yii::app()->user->setFlash('error','Error saving model: ' . print_r($m->getErrors(), true));
+				}
+
+				$name='=?UTF-8?B?'.base64_encode($model->name).'?=';
+				$subject='=?UTF-8?B?'.base64_encode("Spring 2015 League Signup").'?=';
+				$headers="From: $name <{$model->email}>\r\n".
+					"Reply-To: {$model->email}\r\n".
+					"MIME-Version: 1.0\r\n".
+					"Content-type: text/plain; charset=UTF-8";
+
+				foreach(Yii::app()->params['adminEmail'] as $email){
+					mail($email,$subject,$model->body . "  Qualifier: $model->qualifier", $headers);
+				}
+				Yii::app()->user->setFlash('success','Thank you for contacting us. We will respond to you as soon as possible.');
+				$this->refresh();
+			}
+		}
+		$this->render('upcomingseason',array('model'=>$model));
+	}
+
+	public function actionSummersignup()
 	{
 		$model=new UpcomingSeasonForm;
 		if(isset($_POST['UpcomingSeasonForm']))
@@ -272,7 +439,7 @@ class SiteController extends Controller
 			if($model->validate())
 			{
 				$name='=?UTF-8?B?'.base64_encode($model->name).'?=';
-				$subject='=?UTF-8?B?'.base64_encode("Summer 2013 League").'?=';
+				$subject='=?UTF-8?B?'.base64_encode("Summer 2014 League").'?=';
 				$headers="From: $name <{$model->email}>\r\n".
 					"Reply-To: {$model->email}\r\n".
 					"MIME-Version: 1.0\r\n".
@@ -283,12 +450,12 @@ class SiteController extends Controller
 				$this->refresh();
 			}
 		}
-		$this->render('upcomingseason',array('model'=>$model));
+		$this->render('summersignup',array('model'=>$model));
 	}
 
 	public function actionDivisionStatistics()
 	{
-		$divisions = Division::model()->findAll();
+		$divisions = Division::model()->findAllByAttributes(array('active' => 1));
 		$season = Standings::getCurrentSeason();
 		$stats = Statistics::getDivisionStats();
 
